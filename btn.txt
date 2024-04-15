@@ -157,3 +157,107 @@ newDiv1.addClass('user-response');
 
 
 </script>
+
+/*
+ *  Copyright 2015 Adobe Systems Incorporated
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+package com.javadoubts.core.servlets;
+
+import com.google.gson.Gson;
+import com.javadoubts.core.service.GenericHttpService;
+import com.javadoubts.core.util.CommonUtil;
+import org.apache.sling.api.SlingHttpServletRequest;
+import org.apache.sling.api.SlingHttpServletResponse;
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.api.servlets.HttpConstants;
+import org.apache.sling.api.servlets.SlingAllMethodsServlet;
+import org.apache.sling.api.servlets.SlingSafeMethodsServlet;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.osgi.framework.Constants;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
+
+import javax.servlet.Servlet;
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.util.HashMap;
+
+/**
+ * Servlet that writes some sample content into the response. It is mounted for
+ * all resources of a specific Sling resource type. The
+ * {@link SlingSafeMethodsServlet} shall be used for HTTP methods that are
+ * idempotent. For write operations use the {@link SlingAllMethodsServlet}.
+ */
+@Component(
+        service = Servlet.class, immediate = true,
+        property = {
+                Constants.SERVICE_DESCRIPTION + "= Servlet to get offer",
+                "sling.servlet.methods=" + HttpConstants.METHOD_GET,
+                "sling.servlet.resourceTypes=" + "uhg-offer-management/components/content/personalisedoffer",
+                "sling.servlet.extensions=" + "json"
+        }
+)
+public class SimpleServlet extends SlingSafeMethodsServlet {
+
+    private static final long serialVersionUID = 1L;
+
+    @Reference
+    GenericHttpService genericHttpService;
+
+    String json = "";
+
+    private String url = "https://platform.adobe.io/data/core/xcore/906bbb2e-9a7a-352f-968b-dddadc03e297/instances?schema=https://ns.adobe.com/experience/offer-management/personalized-offer";
+
+    @Override
+    protected void doGet(final SlingHttpServletRequest req,
+                         final SlingHttpServletResponse resp) throws ServletException, IOException {
+        final Resource resource = req.getResource();
+        JSONObject jsonobject = new JSONObject();
+        HashMap<String, String> inputMap = new HashMap<>();
+        HashMap<String, String> headerMap = new HashMap<>();
+        headerMap.put("Authorization", "Bearer " + CommonUtil.getAccessToken());
+        headerMap.put("x-api-key", "269f317c6dee412ebc9dd1e812252de1");
+        headerMap.put("x-gw-ims-org-id", "0CEB60F754C7E06B0A4C98A2@AdobeOrg");
+        headerMap.put("x-request-id", "unique-requestid-269f317c6dee412ebc9dd1e812252de1");
+        headerMap.put("Content-Type", "application/vnd.adobe.platform.xcore.hal+json; schema=\"https://ns.adobe.com/experience/offer-management/personalized-offer\"");
+        //jsonobject = genericHttpService.httpGet(url, inputMap, headerMap);
+        Offer[] offer = {
+                new Offer("Test UHC Offer", "15 % discount on Formula Powder"),
+                new Offer("Test Optum Offer", "10 % discount on Protein Powder")
+        };
+
+        // Convert the array to JSON
+        Gson gson = new Gson();
+        json = gson.toJson(offer);
+            /*jsonobject.put("offerName", "Test UHC Offer");
+            jsonobject.put("offerContent", "15 % discount on Formula Powder");
+            jsonobject.put("offerName", "Test Optum Offer");
+            jsonobject.put("offerContent", "10 % discount on Protein Powder");*/
+        resp.setContentType("application/json");
+        resp.getWriter().print(json);
+    }
+
+    static class Offer {
+        private String offerName;
+        private String offerContent;
+
+        public Offer(String offerName, String offerContent) {
+            this.offerName = offerName;
+            this.offerContent = offerContent;
+        }
+    }
+}
+
