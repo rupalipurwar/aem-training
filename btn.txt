@@ -1,0 +1,159 @@
+<!--/*
+    Copyright 2016 Adobe Systems Incorporated
+  
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+  
+        http://www.apache.org/licenses/LICENSE-2.0
+  
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+*/-->
+<a data-sly-use.button="we.retail.core.model.Button"
+   id="myBtn" class="btn myBtn btn-primary btn-action cq-dd-linkTo ${button.cssClass}"
+   href="${button.linkTo == '#' ? '#' : button.linkTo @ extension = 'html'}" role="button">${properties.label}</a>
+
+<div id="myModal" class="wrapper" style="display: none;"><div class="inner-content"></div></div>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script>
+// Get the modal
+var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
+$(document).ready(function() {
+    $('#myBtn').click(function(event) {
+        event.preventDefault(); // Prevent the default link behavior
+       // $('.wrapper').css('display', 'block');
+        // Perform AJAX request
+        $.ajax({
+            url: '/content/we-retail/language-masters/en/te/jcr:content/root/responsivegrid/personalisedoffer.json', // Replace with your servlet URL
+            type: 'GET',
+
+            success: function(data) {
+                // Handle successful response
+                //var customers = JSON.parse(data);
+                var response = data;
+                var arrayList = [];
+                var numberOfDivs = 2;
+                for (var i = 0; i < response.length; i++) {
+              //  for (var i = 0; i < response._embedded.results.length; i++) {
+              //  var resp = response._embedded.results[i]._instance;
+              //  var offername = resp['xdm:name'];
+              //  var representations = resp['xdm:representations'][0];
+              //  var repcomponents = representations['xdm:components'][0];
+              //  var offercontent = repcomponents['xdm:content'];
+var newDiv = $('<div>');
+newDiv.addClass('dynamic-div');
+        newDiv.attr('id', 'div-' + i);
+         newDiv.html("<div class='offer-name'>"+response[i].offerName+"</div><a class='view-offer'>View Offer</a><div class='offer-content'>"+response[i].offerContent+"</div>");
+               // $('.inner-content').append("<div class='offer-name'>"+response.offerName+"</div>");
+               // $('.inner-content').append("<a class='view-offer'>View Offer</a>");
+               // $('.inner-content').append("<div class='offer-content'>"+response.offerContent+"</div>");
+                 //   $('.inner-content').append("<div class='seperator'>"+"</div>");
+
+        var button = $('<button class="event-btn">').text("Accept");
+        button.attr('id', 'acceptbtn-' + i);
+        //button.appendTo('.inner-content');
+         newDiv.append(button);
+         var button1 = $('<button class="event-btn">').text("Reject");
+        button1.attr('id', 'rejectbtn-' + i);
+        newDiv.append(button1);
+
+
+newDiv.appendTo('.inner-content');
+                     $('.offer-name').each(function(){
+            // Get the text content of the current div and push it to the array
+            arrayList.push($(this).text());
+        });
+
+               console.log(response);
+                 console.log(arrayList);   
+              // }
+              // console.log(offername);
+                }
+                 $(".view-offer").click(function(){
+       // alert("hello");
+  $(this).next(".offer-content").toggle();
+});
+$(".event-btn").each(function() {
+                        $(this).on("click", function(){
+   var buttonId = $(this).attr('id');
+    var buttonText = $(this).text();
+                        var parentId = $(this).parent().attr('id');
+                        var substring = parentId.substring(4);
+                        var value1 = arrayList[substring];
+   console.log(buttonId + " button is clicked.");
+                        console.log(buttonText + " button is clicked.");
+                        console.log(value1 + " button is clicked.");
+//alert("Offer "+buttonText+"ed by user");
+
+$.ajax({
+    url: '/bin/myservlet',
+    type: 'GET',
+    success: function(data) {
+        console.log(data);
+                                var newDiv1 = $('<div>');
+newDiv1.addClass('user-response');
+
+                                newDiv1.appendTo('.dynamic-div');
+     $('.user-response').append("<div class='inner-content'>Offer " +buttonText+"ed by user</div>");
+        // Handle response data
+    },
+    error: function(xhr, status, error) {
+        console.error(error);
+        // Handle error
+    }
+});
+                            });
+   });
+            },
+            error: function(xhr, status, error) {
+                // Handle error
+                console.error(error);
+            }
+        });
+
+
+    });
+
+});
+ // $(document).ready(function(){
+     // var options = ['Accept', 'Reject'];
+
+     // options.forEach(function(option){
+     //   var button = $('<button>').text(option);
+        //button.appendTo('.inner-content');
+      //   $('.inner-content').append(button);
+      //});
+    //  $("button").click(function() {
+   // var buttonText = $(this).text();
+  //  console.log(buttonText + " button is clicked.");
+//});
+  //  });
+
+
+</script>
