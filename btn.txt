@@ -378,3 +378,24 @@ https://api-stg.uhg.com/api/consumer/preferences/aep-optum-offerdisposition/1.0.
     "eventType": "advertising.completes",
     "timestamp": "2024-04-22T20:20:39+00:00"
 }
+
+$.ajax({
+    url: 'https://api-stg.uhg.com/api/consumer/preferences/aep-optum-offerdisposition/1.0.0/fnOfferDisposition',
+    type: 'POST',
+    crossDomain: true,
+    contentType: 'application/json',
+    dataType: 'json',
+    data: JSON.stringify({
+    "_id": "0455123abc",
+    "_unitedhealthgroup": {
+        "individualId": "Off_13",
+        "OfferDescription": "offer valid for daibetes",
+        "OfferID": "123",
+        "OfferResponseDate": "2024-04-22T20:20:39+00:00",
+        "OfferSentDate": "2023-04-22T20:20:39+00:00",
+        "OfferStatus": "Accept",
+        "OfferType": "Daibetes"
+    },
+    "eventType": "advertising.completes",
+    "timestamp": "2024-04-22T20:20:39+00:00"
+}),
