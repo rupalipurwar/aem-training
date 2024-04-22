@@ -344,3 +344,19 @@ button.event-btn {
     display: block;
 }
 
+https://api-stg.uhg.com/api/consumer/preferences/aep-optum-offerdisposition/1.0.0/fnOfferDisposition
+{
+    "_id": "/uri-reference",
+    "userId": "Off_13",
+    "_unitedhealthgroup": {
+        "individualId": "Sample value",
+        "OfferDescription": "Sample value",
+        "OfferID": "Sample value",
+        "OfferResponseDate": "2023-11-12T20:20:39+00:00",
+        "OfferSentDate": "2018-11-12T20:20:39+00:00",
+        "OfferStatus": "Sample value",
+        "OfferType": "Sample value"
+    },
+    "eventType": "offerdisposition.event",
+    "timestamp": "2023-11-12T20:20:39+00:00"
+}
